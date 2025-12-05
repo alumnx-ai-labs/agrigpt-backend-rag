@@ -58,7 +58,7 @@ class RAGService:
         # Initialize Pinecone
         pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
         
-        index_name = os.getenv("PINECONE_INDEX_NAME", "rag-chatbot-index")
+        index_name = os.getenv("PINECONE_INDEX", "agrigpt-backend-rag-index")
         
         # Check if index exists, create if not
         existing_indexes = [index.name for index in pc.list_indexes()]
@@ -223,7 +223,7 @@ class RAGService:
             # Get all document IDs and delete them
             # Note: This is a simplified approach. For production, you might want
             # to implement a more sophisticated cleanup mechanism
-            index_name = os.getenv("PINECONE_INDEX_NAME", "rag-chatbot-index")
+            index_name = os.getenv("PINECONE_INDEX", "agrigpt-backend-rag-index")
             pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
             index = pc.Index(index_name)
             
