@@ -1,5 +1,4 @@
 # Minimal working set for Python 3.13
-pyyaml
 python-dotenv
 fastapi
 uvicorn
@@ -13,12 +12,10 @@ langchain-core
 langchain-text-splitters
 langchain-google-genai
 langchain-pinecone
-# Google AI
-google-generativeai
-google-genai
 
 # Utilities
 pypdf
 requests
 python-multipart
 langsmith
+pydantic
