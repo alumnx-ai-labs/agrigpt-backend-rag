@@ -13,8 +13,8 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGener
 from langchain_pinecone import PineconeVectorStore
 from langchain_core.documents import Document
 
-# CLIP Embeddings
-from sentence_transformers import SentenceTransformer
+# CLIP Embeddings - LAZY LOADED in _ensure_clip_loaded() to speed up server startup
+# from sentence_transformers import SentenceTransformer  # DO NOT IMPORT HERE
 
 # Pinecone
 from pinecone import Pinecone, ServerlessSpec
@@ -108,9 +108,11 @@ class ClipIngestService:
             raise e
     
     def _ensure_clip_loaded(self):
-        """Lazy load CLIP model on first use"""
+        """Lazy load CLIP model on first use (import and load model)"""
         if self.clip_model is None:
             print("Loading CLIP model (first use, this may take a moment)...")
+            # Import sentence_transformers here to avoid slow module load at startup
+            from sentence_transformers import SentenceTransformer
             self.clip_model = SentenceTransformer("clip-ViT-B-32")
             print("CLIP model loaded (clip-ViT-B-32, 512 dimensions)")
     
