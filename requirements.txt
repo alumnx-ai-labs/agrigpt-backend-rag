@@ -27,6 +27,6 @@ pydantic
 #sentence-transformers
 Pillow
 pymupdf
-
+pyreadline3; platform_system == "Windows"
 # Cloudflare R2 Storage (S3-compatible)
 boto3
