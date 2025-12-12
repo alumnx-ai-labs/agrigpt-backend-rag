@@ -212,8 +212,11 @@ async def ask_with_image(
     
     NOW ENHANCED: Searches both images and text in same CLIP index!
     """
+    print(f"📥 Received ask_with_image request: file={file.filename if file else 'None'}, mediaUrl={mediaUrl}, query='{query}'")
+
     # Validate that either file or mediaUrl is provided
     if not file and not mediaUrl:
+        print("❌ Bad Request: Neither file nor mediaUrl provided")
         raise HTTPException(status_code=400, detail="Please provide either an image file or a mediaUrl")
 
     # Validate file type if present
@@ -221,16 +224,19 @@ async def ask_with_image(
         allowed_extensions = [".jpg", ".jpeg", ".png", ".webp"]
         file_ext = "." + file.filename.split(".")[-1].lower() if "." in file.filename else ""
         if file_ext not in allowed_extensions:
+            print(f"❌ Bad Request: Invalid file extension '{file_ext}'")
             raise HTTPException(status_code=400, detail="Only image files (JPEG, PNG, WebP) are allowed")
     
     try:
         image_bytes = None
         if file:
             image_bytes = await file.read()
+            print(f"✅ File read successfully, size: {len(image_bytes)} bytes")
         
         # Service handles media_url download if image_bytes is None
         result = await clip_ingest_service.ask_with_image(image_bytes=image_bytes, query=query, media_url=mediaUrl)
         
+        print("✅ Request processed successfully, returning response")
         return AskWithImageResponse(
             answer=result["answer"],
             matched_sources=result["matched_sources"],
@@ -239,6 +245,7 @@ async def ask_with_image(
         )
     
     except Exception as e:
+        print(f"❌ Error in ask_with_image: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error processing image query: {str(e)}")
 
 
