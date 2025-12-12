@@ -28,5 +28,8 @@ pydantic
 Pillow
 pymupdf
 pyreadline3; platform_system == "Windows"
+transformers>=4.30.0
+torch>=2.0.0
+
 # Cloudflare R2 Storage (S3-compatible)
 boto3
