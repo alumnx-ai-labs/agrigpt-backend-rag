@@ -568,7 +568,7 @@ class ClipIngestService:
                     # Try to detect magic bytes if content-type is missing or generic
                     # But for now, user requested: "see if it is an image, else return please only send images"
                     # Strictly speaking, we should rely on content-type or try to open with PIL
-                    pass 
+                    print(f"⚠️ Warning: URL Content-Type is '{content_type}', proceeding with caution")
                 
                 # We'll verify it's an image when we try to open it with PIL below, 
                 # but let's check basic headers first to fail fast
@@ -576,13 +576,17 @@ class ClipIngestService:
                      # Some signed URLs might return octet-stream, so we allow that and let PIL decide
                      # But if it's text/html, clearly wrong.
                      if 'text' in content_type or 'html' in content_type:
+                         print(f"❌ Error: URL returned non-image content type: {content_type}")
                          raise Exception("URL does not appear to point to an image (Content-Type: " + content_type + ")")
                 
                 image_bytes = response.content
+                print(f"✅ Media URL downloaded successfully, size: {len(image_bytes)} bytes")
                 
             except requests.RequestException as e:
+                print(f"❌ Failed to download from URL: {str(e)}")
                 raise Exception(f"Failed to download image from URL: {str(e)}")
             except Exception as e:
+                print(f"❌ Error processing media URL: {str(e)}")
                 raise Exception(f"Error processing media URL: {str(e)}")
 
         if not image_bytes:
@@ -598,7 +602,9 @@ class ClipIngestService:
                 # 1. Load and embed the uploaded image with CLIP
                 try:
                     img = Image.open(io.BytesIO(image_bytes))
-                except Exception:
+                    print(f"✅ Image loaded successfully: {img.format}, Size: {img.size}")
+                except Exception as e:
+                    print(f"❌ Failed to decode image: {str(e)}")
                     raise Exception("Please only send images. The provided content could not be decoded as an image.")
 
                 print("🧠 Step 2: Generating CLIP embedding for uploaded image...")
@@ -637,6 +643,8 @@ class ClipIngestService:
                             "content": match.metadata.get("content", ""),
                             "score": match.score
                         })
+                
+                print(f"📋 Extracted {len(matched_images)} image matches and {len(matched_texts)} text matches")
                 
                 # 4. Build context from matched results
                 image_contexts = []
